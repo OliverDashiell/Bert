@@ -14,7 +14,7 @@ button{
 	top: 0px;
 	left: 0px;
 	right: 0px;
-	height: 20px;
+	height: 19px;
 	border-bottom: 1px solid blue;
 	padding: 10px;
 }
@@ -27,6 +27,7 @@ button{
 	z-index: 100;
 }
 #sprites{
+	border-top: 1px solid blue;
 	background-color: white;
 	position: absolute;
 	left: 0px;
@@ -34,7 +35,6 @@ button{
 	bottom: 0px;
 	height: 40%;
 	z-index: 100;
-	border-top: 1px solid blue;
 	padding: 10px;
 }
 #sprites table td{
@@ -47,9 +47,7 @@ button{
 	bottom: 0px;
 	width: 200px;
 	z-index: 200;
-	border-top: 1px solid blue;
 	border-left: 1px solid blue;
-	background-color: white;
 	padding: 10px;
     -moz-user-select: none;
     -webkit-user-select: none;

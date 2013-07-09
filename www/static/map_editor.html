@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="css/map_editor.css" />
   <script type="text/javascript" src="lib/jquery-2.0.2.min.js"></script>
   <script type="text/javascript" src="lib/knockout-2.2.1.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/map_editor.js"></script>
   <script type="text/javascript">
 $(function(){
@@ -39,8 +40,8 @@ $(function(){
 	    	height = 0;
       
         $selection.css({
-          'top':    click_y - $container.offset().top,
-          'left':   click_x - $container.offset().left,
+          'top':    appl.snap_to_grid(click_y - $container.offset().top),
+          'left':   appl.snap_to_grid(click_x - $container.offset().left),
           'width':  0,
           'height': 0
         });
@@ -51,8 +52,8 @@ $(function(){
               move_y = e.pageY,
               new_x, new_y;
 
-		  width  = Math.abs(move_x - click_x),
-		  height = Math.abs(move_y - click_y),
+		      width  = appl.snap_to_grid(Math.abs(move_x - click_x)),
+		      height = appl.snap_to_grid(Math.abs(move_y - click_y)),
           
           new_x = (move_x < click_x) ? (click_x - width) : click_x;
           new_y = (move_y < click_y) ? (click_y - height) : click_y;
@@ -60,20 +61,25 @@ $(function(){
           $selection.css({
             'width': width,
             'height': height,
-            'top': new_y - $container.offset().top,
-            'left': new_x - $container.offset().left
+            'top': appl.snap_to_grid(new_y - $container.offset().top),
+            'left': appl.snap_to_grid(new_x - $container.offset().left)
           });
           
         }).on('mouseup', function(e) {
             $container.off('mousemove');
-            appl.sheet_drag_rect([
-            	parseInt(click_x - $container.offset().left,10),
-            	parseInt(click_y - $container.offset().top,10),
-            	parseInt(width,10),
-            	parseInt(height,10)
-            ]);
-            //$selection.remove();
-            console.log(appl.sheet_drag_rect());
+            $container.off('mouseup');
+            var dragged_rect = [
+            	appl.snap_to_grid(click_x - $container.offset().left),
+            	appl.snap_to_grid(click_y - $container.offset().top),
+            	width,
+            	height
+            ];
+            if(width >= 17 && height >= 17){
+                appl.sheet_drag_rect(dragged_rect);
+            } else {
+                appl.sheet_drag_rect(null);
+                $selection.remove();
+            }
         });
     });
     
@@ -83,12 +89,15 @@ $(function(){
     };
     
     appl.__remove_item__ = function(){
-    	
+    	appl.delete_sprite_sheet_item();
     };
     
     appl.__sort_draw__ = function(l,r){
     	return l.layer() === r.layer() ? 0 : l.layer() > r.layer() ? 1 : -1;
     };
+    
+    set_background_grid("#map",17,"#cccccc","white");
+    set_background_grid("#sheets",17,"#ddc","white");
     
 	ko.applyBindings(appl);
 });  
@@ -99,7 +108,7 @@ $(function(){
 		<button class="paint-tool" data-bind="css:{'active':selected_tool()=='paint'},click:$.proxy(selected_tool,$root,'paint')">paint</button>
 		<button class="delete-tool" data-bind="css:{'active':selected_tool()=='delete'},click:$.proxy(selected_tool,$root,'delete')">delete</button>
 		<button class="sheets-tool pull-right" data-bind="css:{'active':sheets_visible}">sheets</button>
-		<button class="add-sheetitem-tool pull-right" data-bind="enable:sheet_drag_rect,click:__remove_item__">remove</button>
+		<button class="add-sheetitem-tool pull-right" data-bind="enable:selected_sprite_item,click:__remove_item__">remove</button>
 		<button class="add-sheetitem-tool pull-right" data-bind="enable:sheet_drag_rect,click:__add_item__">add</button>
 		<button class="sprites-tool" data-bind="css:{'active':sprites_visible}">sprites</button>
 		<span>x:<span data-bind="text:width"></span></span>
@@ -110,7 +119,7 @@ $(function(){
 	
 	<div id="map">
 		<!-- ko foreach:sprite_list -->
-			<div class="sheet-item" data-bind="style: to_style()"></div>
+			<div class="sheet-item" data-bind="style: to_style(-1)"></div>
 		<!-- /ko -->
 	</div>
 	<div id="sprites" data-bind="css:{'shown':sprites_visible(),
@@ -133,7 +142,7 @@ $(function(){
 		<h3>sheets</h3>
 		<!-- ko if:selected_sheet -->
 		<!-- ko foreach:selected_sheet().grid_list -->
-			<div class="sheet-item" data-bind="style: to_style(),
+			<div class="sheet-item" data-bind="style: to_style(-1),
 											   click:$parent.selected_sprite_item,
 											   clickBubble:false,
 											   css:{selected_sprite:$data == $root.selected_sprite_item()}"></div>

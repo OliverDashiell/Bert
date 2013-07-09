@@ -6,11 +6,14 @@ function SpriteSheetItem(x,y,width,height){
 	this.height = ko.observable(height || 0);
 }
 
-SpriteSheetItem.prototype.to_style = function(){
+SpriteSheetItem.prototype.to_style = function(offset){
+  if(!offset){
+     offset = 0; 
+  }
 	return { top: this.offset_y() + "px",
 			 left: this.offset_x() + "px",
-			 width: this.width() + "px",
-			 height: this.height() + "px" }
+			 width: (this.width()+offset) + "px",
+			 height: (this.height()+offset) + "px" }
 };
 
 function SpriteSheet(sheet, grid_width, snap_size){
@@ -24,6 +27,15 @@ SpriteSheet.prototype.add_item = function(x,y,width,height){
 	var result = new SpriteSheetItem(x,y,width,height);
 	this.grid_list.push(result);
 	return result;
+};
+
+
+SpriteSheet.prototype.remove_item = function(item){
+	var index = this.grid_list.indexOf(item);
+    if(index !== -1){
+        this.grid_list.splice(index, 1);
+    }
+	return index;
 };
 
 
@@ -51,25 +63,38 @@ function SpriteListItem(layer, sheet, map_x, map_y, offset_x, offset_y, width, h
 		return [this.map_x(),
 				this.map_y()];
 	},this);
-	this.map_rect = ko.computed(function(){
+	this.map_coords = ko.computed(function(){
 		return [this.map_x(),
 				this.map_y(),
 				this.map_x()+this.width(),
 				this.map_y()+this.height()];
 	},this);
+	this.map_rect = ko.computed(function(){
+		return [this.map_x(),
+				this.map_y(),
+				this.width(),
+				this.height()];
+	},this);
 }
 
 SpriteListItem.prototype.contains = function(x,y){
-	var rect = this.map_rect();
+	var rect = this.map_coords();
 	return (rect[0] <= x && rect[2] > x &&
 		    rect[1] <= y && rect[3] > y);
 };
 
-SpriteListItem.prototype.to_style = function(){
+SpriteListItem.prototype.overlaps = function(item){
+    return checkOverlap(this.map_rect(),item.map_rect());
+};
+
+SpriteListItem.prototype.to_style = function(offset){
+    if(!offset){
+        offset = 0; 
+    }
 	return { top: this.map_y() + "px",
-			 left: this.map_x() + "px",
-			 width: this.width() + "px",
-			 height: this.height() + "px" }
+			     left: this.map_x() + "px",
+			     width: (this.width()+offset) + "px",
+			     height: (this.height()+offset) + "px" }
 };
 
 
@@ -126,6 +151,16 @@ Appl.prototype.delete_layer = function(){
 	// disable if selected_layer is "background"
 	// will delete all sprite_list items with this layer and
 	// set the selected_layer to "background"
+    if(this.selected_layer() != this.Constants.default_layer) {
+        for(var i = this.sprite_list().length; i>0; i--) {
+		    sprite = this.sprite_list()[i-1];
+            
+            if(sprite.layer() == this.selected_layer()){
+                this.sprite_list.splice(i-1,1);
+            }
+	    }
+        this.selected_layer(this.Constants.default_layer);
+    }
 };
 
 Appl.prototype.add_sprite_sheet = function(sheet, grid_width, snap_size) {
@@ -135,25 +170,60 @@ Appl.prototype.add_sprite_sheet = function(sheet, grid_width, snap_size) {
 	return item;
 };
 
+Appl.prototype.snap_to_grid = function(val){
+    var snap_size = this.selected_sheet().snap_size();
+    var snap = snap_size * Math.round(val/snap_size);
+    if (snap >= snap_size) {
+        return snap;
+    }
+    else {
+        return null;
+    }
+};
+
 Appl.prototype.add_spite_sheet_item = function(){
 	// add the sheet_drag_rect as an item to the selected sheet and
 	// make it the selected_sheet_item
 	// TODO: worry about overlaps!
+    var snap_size = this.selected_sheet().snap_size();
 	var x = this.sheet_drag_rect()[0];
 	var y = this.sheet_drag_rect()[1];
 	var width = this.sheet_drag_rect()[2];
 	var height = this.sheet_drag_rect()[3];
-	this.selected_sprite_item(this.selected_sheet().add_item(x,y,width,height));
+  
+    if(x != null && y != null && width != null && height != null) {
+      this.selected_sprite_item(this.selected_sheet().add_item(x,y,width,height));
+    }
+};
+
+Appl.prototype.delete_sprite_sheet_item = function(){
+    //delete selected sprite_sheet_item
+    if(this.selected_sprite_item()){
+        var item = this.selected_sprite_item();
+        this.selected_sprite_item(null);
+        this.selected_sheet().remove_item(item);
+    }
 };
 
 Appl.prototype.add_sprite_list_item = function(x,y){
 	// add sprite item x,y to selected layer of sprite_list with selected sprite
-	var layer = this.selected_layer();
+	var adjusted_x = this.snap_to_grid(x);
+    var adjusted_y = this.snap_to_grid(y);
+    var layer = this.selected_layer();
 	var sheet = this.selected_sheet().sheet();
 	var item = this.selected_sprite_item();
-	this.sprite_list.push(new SpriteListItem(layer, sheet, x, y, 
-										 	 item.offset_x(), item.offset_y(), 
-										 	 item.width(), item.height()));
+    if(layer && sheet && item){
+        var new_item = new SpriteListItem(layer, sheet, adjusted_x, adjusted_y, 
+                                                 item.offset_x(), item.offset_y(), 
+                                                 item.width(), item.height());
+        for(var i=0; i < this.sprite_list().length; i++){
+            if(new_item.overlaps(this.sprite_list()[i])){
+                console.log(new_item.map_rect(),this.sprite_list()[i].map_rect());
+                return;   
+            }
+        }
+        this.sprite_list.push(new_item);
+    }
 };
 
 Appl.prototype.remove_sprite_list_item = function(x,y){
