@@ -65,12 +65,20 @@ button{
 }
 
 
+.map-item{
+	background-color: #B3B3B3;
+	position:    absolute;
+    border: 1px solid red;
+	z-index: 300;
+}
+
 .sheet-item{
 	background-color: #B3B3B3;
 	position:    absolute;
 	border: 1px solid blue;
 	z-index: 300;
 }
+
 .selected_sprite{
 	border: 1px solid orange;
 }

@@ -3,8 +3,10 @@
 <head>
   <title>Sprite Map Editor</title>
   <link rel="stylesheet" type="text/css" href="css/html5reset-1.6.1.css" />
+    <link type="text/css" rel="stylesheet" href="lib/jquery-dropdown/jquery.dropdown.css" />
   <link rel="stylesheet" type="text/css" href="css/map_editor.css" />
   <script type="text/javascript" src="lib/jquery-2.0.2.min.js"></script>
+  <script type="text/javascript" src="lib/jquery-dropdown/jquery.dropdown.js"></script>
   <script type="text/javascript" src="lib/knockout-2.2.1.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/map_editor.js"></script>
@@ -114,12 +116,12 @@ $(function(){
 		<span>x:<span data-bind="text:width"></span></span>
 		<span>y:<span data-bind="text:height"></span></span>
 		<span>s:<span data-bind="text:selected_sprite_item_index()"></span></span>
-		<input type="text" data-bind="value:selected_layer" />
+		<input type="text" data-bind="value:selected_layer" data-dropdown="#dropdown-1" />
 	</div>
 	
 	<div id="map">
 		<!-- ko foreach:sprite_list -->
-			<div class="sheet-item" data-bind="style: to_style(-1)"></div>
+			<div class="map-item" data-bind="style: to_style(-1)"></div>
 		<!-- /ko -->
 	</div>
 	<div id="sprites" data-bind="css:{'shown':sprites_visible(),
@@ -149,5 +151,11 @@ $(function(){
 		<!-- /ko -->
 		<!-- /ko -->
 	</div>
+    
+    <div id="dropdown-1" class="dropdown dropdown-tip">
+        <ul class="dropdown-menu" data-bind="foreach:layers" >
+            <li><a href="#" data-bind="text:$data,click:$parent.selected_layer"></a></li>
+        </ul>
+    </div>
 </body>
 </html>

@@ -216,9 +216,13 @@ Appl.prototype.add_sprite_list_item = function(x,y){
         var new_item = new SpriteListItem(layer, sheet, adjusted_x, adjusted_y, 
                                                  item.offset_x(), item.offset_y(), 
                                                  item.width(), item.height());
+        var other_item = null;
+        
         for(var i=0; i < this.sprite_list().length; i++){
-            if(new_item.overlaps(this.sprite_list()[i])){
-                console.log(new_item.map_rect(),this.sprite_list()[i].map_rect());
+            other_item = this.sprite_list()[i];
+            if(new_item.layer() === other_item.layer() &&
+               new_item.overlaps(other_item)){
+                console.log(new_item.map_rect(),other_item.map_rect());
                 return;   
             }
         }
