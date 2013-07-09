@@ -15,7 +15,13 @@ $(function(){
 	var appl = window.appl = new Appl();
 	appl.sheets_visible = ko.observable(false);
 	appl.sprites_visible = ko.observable(false);
-	appl.add_sprite_sheet("default.png");
+    
+    appl.selected_sheet.subscribe(function(sheet){
+        if(sheet){
+            $("#spitesheetimg").css({'background-image': "url(images/" + sheet.sheet() + ")",
+                                     'background-repeat': "no-repeat" });
+        }
+    });
 	
 	$('.sheets-tool').click(function(){
 		appl.sheets_visible(!appl.sheets_visible());
@@ -30,7 +36,7 @@ $(function(){
 		appl.do_action(posX, posY);
 	});
 	
-	var $container = $('#sheets');
+	var $container = $('#spitesheetgrid');
     var $selection = $('<div>').addClass('selection-box');
     
     $container.on('mousedown', function(e) {
@@ -66,7 +72,7 @@ $(function(){
             'top': appl.snap_to_grid(new_y - $container.offset().top),
             'left': appl.snap_to_grid(new_x - $container.offset().left)
           });
-          
+            
         }).on('mouseup', function(e) {
             $container.off('mousemove');
             $container.off('mouseup');
@@ -99,7 +105,12 @@ $(function(){
     };
     
     set_background_grid("#map",17,"#cccccc","white");
-    set_background_grid("#sheets",17,"#ddc","white");
+    set_background_grid("#spitesheetgrid",17,"#ccc");
+    
+    
+    appl.add_sprite_sheet("brtsheet.png");
+    appl.add_sprite_sheet("zombies.png");
+    
     
 	ko.applyBindings(appl);
 });  
@@ -110,8 +121,10 @@ $(function(){
 		<button class="paint-tool" data-bind="css:{'active':selected_tool()=='paint'},click:$.proxy(selected_tool,$root,'paint')">paint</button>
 		<button class="delete-tool" data-bind="css:{'active':selected_tool()=='delete'},click:$.proxy(selected_tool,$root,'delete')">delete</button>
 		<button class="sheets-tool pull-right" data-bind="css:{'active':sheets_visible}">sheets</button>
-		<button class="add-sheetitem-tool pull-right" data-bind="enable:selected_sprite_item,click:__remove_item__">remove</button>
-		<button class="add-sheetitem-tool pull-right" data-bind="enable:sheet_drag_rect,click:__add_item__">add</button>
+        <button class="sheet-tool pull-right" data-bind="visible:sheets_visible,text:selected_sheet().sheet" 
+                data-dropdown="#dropdown-2">selected sheet</button>
+		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:selected_sprite_item,click:__remove_item__">remove</button>
+		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:sheet_drag_rect,click:__add_item__">add</button>
 		<button class="sprites-tool" data-bind="css:{'active':sprites_visible}">sprites</button>
 		<span>x:<span data-bind="text:width"></span></span>
 		<span>y:<span data-bind="text:height"></span></span>
@@ -141,7 +154,8 @@ $(function(){
 		
 	<div id="sheets" data-bind="css:{'shown':sheets_visible(),
 									 'hidden':!sheets_visible()}">
-		<h3>sheets</h3>
+        <div id="spitesheetimg" class="spitesheetpanel"></div>
+        <div id="spitesheetgrid" class="spitesheetpanel">
 		<!-- ko if:selected_sheet -->
 		<!-- ko foreach:selected_sheet().grid_list -->
 			<div class="sheet-item" data-bind="style: to_style(-1),
@@ -150,11 +164,17 @@ $(function(){
 											   css:{selected_sprite:$data == $root.selected_sprite_item()}"></div>
 		<!-- /ko -->
 		<!-- /ko -->
+        </div>
 	</div>
     
     <div id="dropdown-1" class="dropdown dropdown-tip">
         <ul class="dropdown-menu" data-bind="foreach:layers" >
             <li><a href="#" data-bind="text:$data,click:$parent.selected_layer"></a></li>
+        </ul>
+    </div>
+    <div id="dropdown-2" class="dropdown dropdown-tip">
+        <ul class="dropdown-menu" data-bind="foreach:sprite_sheets" >
+            <li><a href="#" data-bind="text:sheet,click:$parent.selected_sheet"></a></li>
         </ul>
     </div>
 </body>

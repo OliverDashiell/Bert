@@ -92,9 +92,13 @@ SpriteListItem.prototype.to_style = function(offset){
         offset = 0; 
     }
 	return { top: this.map_y() + "px",
-			     left: this.map_x() + "px",
-			     width: (this.width()+offset) + "px",
-			     height: (this.height()+offset) + "px" }
+			 left: this.map_x() + "px",
+			 width: (this.width()+offset) + "px",
+			 height: (this.height()+offset) + "px",
+            'background-repeat': 'no-repeat',
+            'background-image': "url(images/" + this.sheet() + ")",
+            'background-position': "-" + this.offset_x() + "px -" + this.offset_y() + "px"
+           }
 };
 
 
