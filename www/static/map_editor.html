@@ -13,6 +13,7 @@
   <script type="text/javascript">
 $(function(){
 	var appl = window.appl = new Appl();
+    appl.grid_size(16);
 	appl.sheets_visible = ko.observable(false);
 	appl.sprites_visible = ko.observable(false);
     
@@ -77,12 +78,12 @@ $(function(){
             $container.off('mousemove');
             $container.off('mouseup');
             var dragged_rect = [
-            	appl.snap_to_grid(click_x - $container.offset().left),
-            	appl.snap_to_grid(click_y - $container.offset().top),
+            	appl.snap_to_grid(click_x - $container.offset().left) || 0,
+            	appl.snap_to_grid(click_y - $container.offset().top) || 0,
             	width,
             	height
             ];
-            if(width >= 17 && height >= 17){
+            if(width >= appl.grid_size() && height >= appl.grid_size()){
                 appl.sheet_drag_rect(dragged_rect);
             } else {
                 appl.sheet_drag_rect(null);
@@ -104,12 +105,13 @@ $(function(){
     	return l.layer() === r.layer() ? 0 : l.layer() > r.layer() ? 1 : -1;
     };
     
-    set_background_grid("#map",17,"#cccccc","white");
-    set_background_grid("#spitesheetgrid",17,"#ccc");
+    set_background_grid("#map",appl.grid_size(),"#cccccc","white");
+    set_background_grid("#spitesheetgrid",appl.grid_size(),"#ccc");
     
     
     appl.add_sprite_sheet("brtsheet.png");
     appl.add_sprite_sheet("zombies.png");
+    appl.add_sprite_sheet("ttt.png");
     
     
 	ko.applyBindings(appl);
@@ -133,7 +135,7 @@ $(function(){
 	</div>
 	
 	<div id="map">
-		<!-- ko foreach:sprite_list -->
+        <!-- ko foreach:sprite_list().sort($root.__sort_draw__) -->
 			<div class="map-item" data-bind="style: to_style(-1)"></div>
 		<!-- /ko -->
 	</div>

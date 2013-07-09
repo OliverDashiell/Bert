@@ -111,6 +111,7 @@ function Appl(width,height){
 
 	this.width = ko.observable(width || 0);
 	this.height = ko.observable(height || 0);
+    this.grid_size = ko.observable(17);
 
 	this.tools = ko.observableArray(this.Constants.tools);
 	this.selected_tool = ko.observable(this.Constants.tools[0]);
@@ -168,6 +169,9 @@ Appl.prototype.delete_layer = function(){
 };
 
 Appl.prototype.add_sprite_sheet = function(sheet, grid_width, snap_size) {
+    if(!snap_size){
+        snap_size = this.grid_size();
+    }
 	var item = new SpriteSheet(sheet, grid_width, snap_size);
 	this.sprite_sheets.push(item);
 	this.selected_sheet(item);
