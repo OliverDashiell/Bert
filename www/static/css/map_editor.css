@@ -1,5 +1,6 @@
 html,body{
 	height: 100%;
+    width: 100%;
 }
 button{
 	background-color: #eee;
@@ -17,14 +18,18 @@ button{
 	height: 19px;
 	border-bottom: 1px solid blue;
 	padding: 10px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none
 }
-#map{
+#map-container{
 	position: absolute;
 	top: 40px;
 	left: 0px;
 	right: 0px;
 	bottom: 0px;
 	z-index: 100;
+    overflow: auto;
 }
 #sprites{
 	border-top: 1px solid blue;
@@ -47,6 +52,7 @@ button{
 	bottom: 0px;
 	width: 40%;
 	z-index: 200;
+    overflow: auto;
     background-color:white;
 	border-left: 1px solid blue;
     -moz-user-select: none;
@@ -90,8 +96,6 @@ button{
     position: absolute;
     top: 0px;
     left: 0px;
-    width: 100%;
-    height: 100%;
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;

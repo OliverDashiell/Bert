@@ -7,9 +7,9 @@ function SpriteSheetItem(x,y,width,height){
 }
 
 SpriteSheetItem.prototype.to_style = function(offset){
-  if(!offset){
-     offset = 0; 
-  }
+    if(!offset){
+        offset = 0; 
+    }
 	return { top: this.offset_y() + "px",
 			 left: this.offset_x() + "px",
 			 width: (this.width()+offset) + "px",
@@ -21,6 +21,24 @@ function SpriteSheet(sheet, grid_width, snap_size){
 	this.grid_width = ko.observable(grid_width || -1);
 	this.snap_size = ko.observable(snap_size || 16);
 	this.grid_list = ko.observableArray();
+    this.sheet_width = ko.observable(0);
+    this.sheet_height = ko.observable(0);
+    
+    this.to_size_style = ko.computed(function(){
+        return {
+            width: this.sheet_width() + "px",
+            height: this.sheet_height() + "px"
+        };
+    },this);
+    
+    this.to_style = ko.computed(function(){
+        return {
+            width: this.sheet_width() + "px",
+            height: this.sheet_height() + "px",
+            'background-image': "url(images/"+this.sheet()+")",
+            'background-repeat': "no-repeat"
+        };
+    },this);
 }
 
 SpriteSheet.prototype.add_item = function(x,y,width,height){
@@ -108,8 +126,8 @@ function Appl(width,height,grid_size){
         default_grid_size: 16
 	};
 
-	this.width = ko.observable(width || 0);
-	this.height = ko.observable(height || 0);
+	this.width = ko.observable(width || 640);
+	this.height = ko.observable(height || 480);
     this.grid_size = ko.observable(grid_size || this.Constants.default_grid_size);
 
 	this.tools = ko.observableArray(this.Constants.tools);
@@ -122,6 +140,9 @@ function Appl(width,height,grid_size){
 	this.selected_sheet = ko.observable();
 	this.sheet_drag_rect = ko.observable();
 	this.selected_sprite_item = ko.observable();
+    this.selected_sheet.subscribe(function(){
+        this.selected_sprite_item(null);
+    },this);
 	
 	this.sprite_list = ko.observableArray();
 	this.sprite_list.subscribe($.proxy(this._update_layer_names_,this));
@@ -132,6 +153,13 @@ function Appl(width,height,grid_size){
 		}
 		return -1;
 	},this);
+    
+    this.to_style = ko.computed(function(){
+        return {
+            width: this.width() + "px",
+            height: this.height() + "px"
+        };
+    },this);
 }
 
 Appl.prototype._update_layer_names_ = function(){

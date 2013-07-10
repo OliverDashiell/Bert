@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Sprite Map Editor</title>
-  <link rel="stylesheet" type="text/css" href="css/html5reset-1.6.1.css" />
+    <title>Sprite Map Editor</title>
+    <link rel="stylesheet" type="text/css" href="css/html5reset-1.6.1.css" />
     <link type="text/css" rel="stylesheet" href="lib/jquery-dropdown/jquery.dropdown.css" />
-  <link rel="stylesheet" type="text/css" href="css/map_editor.css" />
-  <script type="text/javascript" src="lib/jquery-2.0.2.min.js"></script>
-  <script type="text/javascript" src="lib/jquery-dropdown/jquery.dropdown.js"></script>
-  <script type="text/javascript" src="lib/knockout-2.2.1.js"></script>
-  <script type="text/javascript" src="js/utils.js"></script>
-  <script type="text/javascript" src="js/map_editor.js"></script>
-  <script type="text/javascript">
+    <link rel="stylesheet" type="text/css" href="css/map_editor.css" />
+    <script type="text/javascript" src="lib/jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-dropdown/jquery.dropdown.js"></script>
+    <script type="text/javascript" src="lib/knockout-2.2.1.js"></script>
+    <script type="text/javascript" src="lib/knockout.mapping/knockout.mapping.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/map_editor.js"></script>
+    <script type="text/javascript">
 $(function(){
 	var appl = window.appl = new Appl();
 	appl.sheets_visible = ko.observable(false);
 	appl.sprites_visible = ko.observable(false);
     
     appl.selected_sheet.subscribe(function(sheet){
-        if(sheet){
-            $("#spitesheetimg").css({'background-image': "url(images/" + sheet.sheet() + ")",
-                                     'background-repeat': "no-repeat" });
+        if(sheet && sheet.sheet_width() === 0){
+            var image_src = "images/" + sheet.sheet();
+            var imageObj = new Image();
+            imageObj.onload = function() {
+                sheet.sheet_width(imageObj.width);
+                sheet.sheet_height(imageObj.height);
+            };
+            imageObj.src = image_src;
         }
     });
 	
@@ -38,6 +44,7 @@ $(function(){
 	
 	var $container = $('#spitesheetgrid');
     var $selection = $('<div>').addClass('selection-box');
+    var selection_border_width = 1;
     
     $container.on('mousedown', function(e) {
     	if(e.target !== $container[0]) return;
@@ -67,8 +74,8 @@ $(function(){
           new_y = (move_y < click_y) ? (click_y - height) : click_y;
           
           $selection.css({
-            'width': width,
-            'height': height,
+            'width': width - selection_border_width,
+            'height': height - selection_border_width,
             'top': appl.snap_to_grid(new_y - $container.offset().top),
             'left': appl.snap_to_grid(new_x - $container.offset().left)
           });
@@ -104,13 +111,17 @@ $(function(){
     	return l.layer() === r.layer() ? 0 : l.layer() > r.layer() ? 1 : -1;
     };
     
-    set_background_grid("#map",appl.grid_size(),"#cccccc","white");
+    set_background_grid("#map",appl.grid_size(),"#ccc");
     set_background_grid("#spitesheetgrid",appl.grid_size(),"#ccc");
     
     
     appl.add_sprite_sheet("brtsheet.png");
     appl.add_sprite_sheet("zombies.png");
     appl.add_sprite_sheet("ttt.png");
+    
+    $(".save-tool").click(function(){
+        console.log($.parseJSON(ko.mapping.toJSON(appl)));
+    });
     
     
 	ko.applyBindings(appl);
@@ -121,23 +132,28 @@ $(function(){
 	<div id="menu">
 		<button class="paint-tool" data-bind="css:{'active':selected_tool()=='paint'},click:$.proxy(selected_tool,$root,'paint')">paint</button>
 		<button class="delete-tool" data-bind="css:{'active':selected_tool()=='delete'},click:$.proxy(selected_tool,$root,'delete')">delete</button>
+		<button class="save-tool pull-right">Save</button>
 		<button class="sheets-tool pull-right" data-bind="css:{'active':sheets_visible}">sheets</button>
         <button class="sheet-tool pull-right" data-bind="visible:sheets_visible,text:selected_sheet().sheet" 
                 data-dropdown="#dropdown-2">selected sheet</button>
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:selected_sprite_item,click:__remove_item__">remove</button>
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:sheet_drag_rect,click:__add_item__">add</button>
 		<button class="sprites-tool" data-bind="css:{'active':sprites_visible}">sprites</button>
-		<span>x:<span data-bind="text:width"></span></span>
-		<span>y:<span data-bind="text:height"></span></span>
 		<span>s:<span data-bind="text:selected_sprite_item_index()"></span></span>
 		<input type="text" data-bind="value:selected_layer" data-dropdown="#dropdown-1" />
+        <span>w:</span>
+		<input type="text" data-bind="value:width" />
+        <span>h:</span>
+		<input type="text" data-bind="value:height" />
 	</div>
-	
-	<div id="map">
-        <!-- ko foreach:sprite_list().sort($root.__sort_draw__) -->
-			<div class="map-item" data-bind="style: to_style(-1)"></div>
-		<!-- /ko -->
-	</div>
+    
+    <div id="map-container">
+        <div id="map" data-bind="style: to_style">
+            <!-- ko foreach:sprite_list().sort($root.__sort_draw__) -->
+                <div class="map-item" data-bind="style: to_style(-1)"></div>
+            <!-- /ko -->
+        </div>
+    </div>
 	<div id="sprites" data-bind="css:{'shown':sprites_visible(),
 									  'hidden':!sprites_visible()}">
 		<h3>sprites</h3>
@@ -155,17 +171,17 @@ $(function(){
 		
 	<div id="sheets" data-bind="css:{'shown':sheets_visible(),
 									 'hidden':!sheets_visible()}">
-        <div id="spitesheetimg" class="spitesheetpanel"></div>
-        <div id="spitesheetgrid" class="spitesheetpanel">
 		<!-- ko if:selected_sheet -->
+        <div id="spitesheetimg" class="spitesheetpanel" data-bind="style:selected_sheet().to_style"></div>
+        <div id="spitesheetgrid" class="spitesheetpanel" data-bind="style:selected_sheet().to_size_style">
 		<!-- ko foreach:selected_sheet().grid_list -->
 			<div class="sheet-item" data-bind="style: to_style(-1),
 											   click:$parent.selected_sprite_item,
 											   clickBubble:false,
 											   css:{selected_sprite:$data == $root.selected_sprite_item()}"></div>
 		<!-- /ko -->
-		<!-- /ko -->
         </div>
+		<!-- /ko -->
 	</div>
     
     <div id="dropdown-1" class="dropdown dropdown-tip">
