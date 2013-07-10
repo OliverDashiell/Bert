@@ -1,14 +1,14 @@
 describe("Appl", function() {
   var appl;
-  var grid_size = 17;
+  var grid_size = 16;
 
   beforeEach(function() {
     appl = new Appl();
   });
 
   it("init", function() {
-    expect(appl.width()).toEqual(0);
-    expect(appl.height()).toEqual(0);
+    expect(appl.width()).toEqual(640);
+    expect(appl.height()).toEqual(480);
     expect(appl.selected_layer()).toEqual("background");
   });
   

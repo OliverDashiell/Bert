@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Sprite Map Editor</title>
+    <title>Dash-Maps Editor</title>
+    <link rel="shortcut icon" href="images/favicon.png">
     <link rel="stylesheet" type="text/css" href="css/html5reset-1.6.1.css" />
-    <link type="text/css" rel="stylesheet" href="lib/jquery-dropdown/jquery.dropdown.css" />
+    <link rel="stylesheet" type="text/css" href="lib/Font-Awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="lib/jquery-dropdown/jquery.dropdown.css" />
     <link rel="stylesheet" type="text/css" href="css/map_editor.css" />
     <script type="text/javascript" src="lib/jquery-2.0.2.min.js"></script>
     <script type="text/javascript" src="lib/jquery-dropdown/jquery.dropdown.js"></script>
@@ -130,21 +132,48 @@ $(function(){
 </head>
 <body>
 	<div id="menu">
-		<button class="paint-tool" data-bind="css:{'active':selected_tool()=='paint'},click:$.proxy(selected_tool,$root,'paint')">paint</button>
-		<button class="delete-tool" data-bind="css:{'active':selected_tool()=='delete'},click:$.proxy(selected_tool,$root,'delete')">delete</button>
-		<button class="sheets-tool pull-right" data-bind="css:{'active':sheets_visible}">sheets</button>
-        <button class="sheet-tool pull-right" data-bind="visible:sheets_visible,text:selected_sheet().sheet" 
-                data-dropdown="#dropdown-2">selected sheet</button>
+        <span class="logo">
+            <i class="icon-gamepad"></i>
+            Dash-Maps
+        </span>
+		<button class="paint-tool" data-bind="css:{'active':selected_tool()=='paint'},click:$.proxy(selected_tool,$root,'paint')">
+            <i class="icon-pencil"></i>
+            Paint
+        </button>
+		<button class="delete-tool" data-bind="css:{'active':selected_tool()=='delete'},click:$.proxy(selected_tool,$root,'delete')">
+            <i class="icon-eraser"></i>
+            Delete
+        </button>
+		<button class="sheets-tool pull-right" data-bind="css:{'active':sheets_visible}">
+            <i class="icon-archive"></i>
+            Sheets
+        </button>
+        <button class="sheet-tool pull-right" data-bind="visible:sheets_visible" 
+                data-dropdown="#dropdown-2">
+            <span data-bind="text:selected_sheet().sheet"></span>
+            <i class="icon-caret-down"></i>
+        </button>
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:selected_sprite_item,click:__remove_item__">remove</button>
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:sheet_drag_rect,click:__add_item__">add</button>
-		<button class="sprites-tool" data-bind="css:{'active':sprites_visible}">sprites</button>
+		<button class="sprites-tool" data-bind="css:{'active':sprites_visible}">
+            <i class="icon-picture"></i>
+            Sprites
+        </button>
         <div class="pull-right" style="margin-top: 5px; margin-right: 5px;">Selection:<span data-bind="text:selected_sprite_item_index()"></span></div>
 		<input type="text" data-bind="value:selected_layer" data-dropdown="#dropdown-1" />
-        <span>w:</span>
+        <i class="icon-caret-down" data-dropdown="#dropdown-1a" data-vertical-offset="3" ></i>
+        <span style="margin-left: 6px;">w:</span>
         <input type="text" data-bind="value:width" style="width:60px;"/>
         <span>h:</span>
 		<input type="text" data-bind="value:height" style="width:60px;" />
-		<button class="save-tool">save</button>
+		<button class="open-tool">
+            <i class="icon-folder-open"></i>
+            Open
+        </button>
+		<button class="save-tool">
+            <i class="icon-folder-close"></i>
+            Save
+        </button>
 	</div>
     
     <div id="map-container">
@@ -184,6 +213,11 @@ $(function(){
 	</div>
     
     <div id="dropdown-1" class="dropdown dropdown-tip">
+        <ul class="dropdown-menu" data-bind="foreach:layers" >
+            <li><a href="#" data-bind="text:$data,click:$parent.selected_layer"></a></li>
+        </ul>
+    </div>
+    <div id="dropdown-1a" class="dropdown dropdown-tip dropdown-anchor-right">
         <ul class="dropdown-menu" data-bind="foreach:layers" >
             <li><a href="#" data-bind="text:$data,click:$parent.selected_layer"></a></li>
         </ul>

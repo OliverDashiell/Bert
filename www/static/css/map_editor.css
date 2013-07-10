@@ -1,3 +1,16 @@
+@font-face {
+  font-family: 'Allan';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Allan'), local('Allan-Regular'), url("fonts/Allan-Regular.ttf");
+}
+@font-face {
+  font-family: 'Allan';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Allan Bold'), local('Allan-Bold'), url("fonts/Allan-Bold.ttf");
+}
+
 html,body{
 	height: 100%;
     width: 100%;
@@ -121,33 +134,10 @@ button{
     user-select: none;
 }
 
-.paint-tool{
-    padding-left: 20px;
-    background-image: url(../images/icons/Paint.png);
-    background-position: 2px 1px;
-    background-repeat: no-repeat;
-}
-.delete-tool{
-    padding-left: 20px;
-    background-image: url(../images/icons/Delete.png);
-    background-position: 2px 1px;
-    background-repeat: no-repeat;
-}
-.sprites-tool{
-    padding-left: 20px;
-    background-image: url("../images/icons/Folder (Alt 2).png");
-    background-position: 2px 1px;
-    background-repeat: no-repeat;
-}
-.sheets-tool{
-    padding-left: 20px;
-    background-image: url("../images/icons/Image.png");
-    background-position: 2px 1px;
-    background-repeat: no-repeat;
-}
-.save-tool{
-    padding-left: 20px;
-    background-image: url("../images/icons/Save.png");
-    background-position: 2px 1px;
-    background-repeat: no-repeat;
+.logo{
+    font-family: 'Allan', cursive;
+    font-size: 16px;
+    line-height: 13px;
+    color: #0099CC;
+    margin-right: 1em;
 }
