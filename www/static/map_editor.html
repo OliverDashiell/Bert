@@ -132,19 +132,19 @@ $(function(){
 	<div id="menu">
 		<button class="paint-tool" data-bind="css:{'active':selected_tool()=='paint'},click:$.proxy(selected_tool,$root,'paint')">paint</button>
 		<button class="delete-tool" data-bind="css:{'active':selected_tool()=='delete'},click:$.proxy(selected_tool,$root,'delete')">delete</button>
-		<button class="save-tool pull-right">Save</button>
 		<button class="sheets-tool pull-right" data-bind="css:{'active':sheets_visible}">sheets</button>
         <button class="sheet-tool pull-right" data-bind="visible:sheets_visible,text:selected_sheet().sheet" 
                 data-dropdown="#dropdown-2">selected sheet</button>
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:selected_sprite_item,click:__remove_item__">remove</button>
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:sheet_drag_rect,click:__add_item__">add</button>
 		<button class="sprites-tool" data-bind="css:{'active':sprites_visible}">sprites</button>
-		<span>s:<span data-bind="text:selected_sprite_item_index()"></span></span>
+        <div class="pull-right" style="margin-top: 5px; margin-right: 5px;">Selection:<span data-bind="text:selected_sprite_item_index()"></span></div>
 		<input type="text" data-bind="value:selected_layer" data-dropdown="#dropdown-1" />
         <span>w:</span>
-		<input type="text" data-bind="value:width" />
+        <input type="text" data-bind="value:width" style="width:60px;"/>
         <span>h:</span>
-		<input type="text" data-bind="value:height" />
+		<input type="text" data-bind="value:height" style="width:60px;" />
+		<button class="save-tool">save</button>
 	</div>
     
     <div id="map-container">
@@ -156,7 +156,6 @@ $(function(){
     </div>
 	<div id="sprites" data-bind="css:{'shown':sprites_visible(),
 									  'hidden':!sprites_visible()}">
-		<h3>sprites</h3>
 		<table>
 			<tbody  data-bind="foreach:sprite_list">
 			<tr>
