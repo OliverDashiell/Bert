@@ -59,7 +59,7 @@ describe("Appl", function() {
   	appl.sheet_drag_rect([0,0,grid_size,grid_size]);
   	appl.add_spite_sheet_item();
   	appl.do_action(5,5);
-    appl.do_action(10,10);
+    appl.do_action(50,50);
     appl.delete_layer();
     expect(appl.sprite_list().length).toEqual(2);
   	expect(appl.layers()).toEqual(["background"]);

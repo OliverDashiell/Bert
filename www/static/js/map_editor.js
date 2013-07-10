@@ -19,7 +19,7 @@ SpriteSheetItem.prototype.to_style = function(offset){
 function SpriteSheet(sheet, grid_width, snap_size){
 	this.sheet = ko.observable(sheet);
 	this.grid_width = ko.observable(grid_width || -1);
-	this.snap_size = ko.observable(snap_size || 17);
+	this.snap_size = ko.observable(snap_size || 16);
 	this.grid_list = ko.observableArray();
 }
 
@@ -95,23 +95,22 @@ SpriteListItem.prototype.to_style = function(offset){
 			 left: this.map_x() + "px",
 			 width: (this.width()+offset) + "px",
 			 height: (this.height()+offset) + "px",
-            'background-repeat': 'no-repeat',
-            'background-image': "url(images/" + this.sheet() + ")",
-            'background-position': "-" + this.offset_x() + "px -" + this.offset_y() + "px"
-           }
+            'background-repeat': "no-repeat",
+            'background-image': "url(images/"+this.sheet()+")",
+            'background-position': "-"+this.offset_x()+"px -"+this.offset_y()+"px"}
 };
 
 
-
-function Appl(width,height){
+function Appl(width,height,grid_size){
 	this.Constants = {
 		tools: ["paint","delete"],
-		default_layer: "background"
+		default_layer: "background",
+        default_grid_size: 16
 	};
 
 	this.width = ko.observable(width || 0);
 	this.height = ko.observable(height || 0);
-    this.grid_size = ko.observable(17);
+    this.grid_size = ko.observable(grid_size || this.Constants.default_grid_size);
 
 	this.tools = ko.observableArray(this.Constants.tools);
 	this.selected_tool = ko.observable(this.Constants.tools[0]);
@@ -169,9 +168,6 @@ Appl.prototype.delete_layer = function(){
 };
 
 Appl.prototype.add_sprite_sheet = function(sheet, grid_width, snap_size) {
-    if(!snap_size){
-        snap_size = this.grid_size();
-    }
 	var item = new SpriteSheet(sheet, grid_width, snap_size);
 	this.sprite_sheets.push(item);
 	this.selected_sheet(item);
@@ -180,7 +176,7 @@ Appl.prototype.add_sprite_sheet = function(sheet, grid_width, snap_size) {
 
 Appl.prototype.snap_to_grid = function(val){
     var snap_size = this.selected_sheet().snap_size();
-    var snap = snap_size * Math.round(val/snap_size);
+    var snap = snap_size * Math.floor(val/snap_size);
     if (snap >= snap_size) {
         return snap;
     }
@@ -193,7 +189,6 @@ Appl.prototype.add_spite_sheet_item = function(){
 	// add the sheet_drag_rect as an item to the selected sheet and
 	// make it the selected_sheet_item
 	// TODO: worry about overlaps!
-    var snap_size = this.selected_sheet().snap_size();
 	var x = this.sheet_drag_rect()[0];
 	var y = this.sheet_drag_rect()[1];
 	var width = this.sheet_drag_rect()[2];
