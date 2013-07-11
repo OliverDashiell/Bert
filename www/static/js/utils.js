@@ -26,7 +26,6 @@ function set_background_grid(selector, grid_width, colour, background_colour){
 
 	var url = canvas[0].toDataURL();
 	$(selector).css({"background":"url("+url + ")"});
-	console.log(url);
 }
 
 

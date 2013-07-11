@@ -113,20 +113,24 @@ $(function(){
     	return l.layer() === r.layer() ? 0 : l.layer() > r.layer() ? 1 : -1;
     };
     
+    appl.__upload_dialog___ = function(){
+        console.log("show upload dialog");  
+    };
+    
     set_background_grid("#map",appl.grid_size(),"#ccc");
     set_background_grid("#spitesheetgrid",appl.grid_size(),"#ccc");
-    
-    
-    appl.add_sprite_sheet("brtsheet.png");
-    appl.add_sprite_sheet("zombies.png");
-    appl.add_sprite_sheet("ttt.png");
     
     $(".save-tool").click(function(){
         console.log($.parseJSON(ko.mapping.toJSON(appl)));
     });
     
-    
-	ko.applyBindings(appl);
+    $.getJSON("/spritesheets", function(data, textStatus, jqXHR){
+        data.sort();
+        for(var i=0; i<data.length; i++){
+            appl.add_sprite_sheet(data[i]);
+        }  
+        ko.applyBindings(appl);  
+    });
 });  
   </script>
 </head>
@@ -148,11 +152,13 @@ $(function(){
             <i class="icon-archive"></i>
             Sheets
         </button>
+        <!-- ko if:selected_sheet -->
         <button class="sheet-tool pull-right" data-bind="visible:sheets_visible" 
-                data-dropdown="#dropdown-2">
+                data-dropdown="#dropdown-2" data-horizontal-offset="5">
             <span data-bind="text:selected_sheet().sheet"></span>
             <i class="icon-caret-down"></i>
         </button>
+        <!-- /ko -->
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:selected_sprite_item,click:__remove_item__">remove</button>
 		<button class="add-sheetitem-tool pull-right" data-bind="visible:sheets_visible,enable:sheet_drag_rect,click:__add_item__">add</button>
 		<button class="sprites-tool" data-bind="css:{'active':sprites_visible}">
@@ -223,8 +229,12 @@ $(function(){
         </ul>
     </div>
     <div id="dropdown-2" class="dropdown dropdown-tip">
-        <ul class="dropdown-menu" data-bind="foreach:sprite_sheets" >
+        <ul class="dropdown-menu" >
+            <!-- ko foreach:sprite_sheets -->
             <li><a href="#" data-bind="text:sheet,click:$parent.selected_sheet"></a></li>
+            <!-- /ko -->
+            <li class="dropdown-divider"></li>
+            <li><a href="#" data-bind="click:$.proxy(__upload_dialog___,$root)">Add Sheet</a></li>
         </ul>
     </div>
 </body>
