@@ -1,10 +1,10 @@
 
 #bert{
-    background: url("../images/brtsheet.png") 0 0;
+    background: url("../images/spritesheets/brtsheet.png") 0 0;
 }	
 
 .zombie{
-    background: url("../images/zombies.png") 0 0;
+    background: url("../images/spritesheets/zombies.png") 0 0;
 	-moz-transform: scaleX(-1);
     -o-transform: scaleX(-1);
     -webkit-transform: scaleX(-1);
