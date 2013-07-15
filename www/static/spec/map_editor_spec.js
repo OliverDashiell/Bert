@@ -94,4 +94,13 @@ describe("Appl", function() {
   	appl.remove_sprite_list_item(6,8);
   	expect(appl.sprite_list().length).toEqual(1);
   });
+  
+  it("should save", function() {
+  	var saved_map = appl.save();
+  });
+  
+  it("should load", function() {
+      var saved_map = {};
+      appl.load(saved_map);
+  });
 });

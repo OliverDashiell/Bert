@@ -35,7 +35,7 @@ function SpriteSheet(sheet, grid_width, snap_size){
         return {
             width: this.sheet_width() + "px",
             height: this.sheet_height() + "px",
-            'background-image': "url(images/"+this.sheet()+")",
+            'background-image': "url(images/spritesheets/"+this.sheet()+")",
             'background-repeat': "no-repeat"
         };
     },this);
@@ -114,7 +114,7 @@ SpriteListItem.prototype.to_style = function(offset){
 			 width: (this.width()+offset) + "px",
 			 height: (this.height()+offset) + "px",
             'background-repeat': "no-repeat",
-            'background-image': "url(images/"+this.sheet()+")",
+            'background-image': "url(images/spritesheets/"+this.sheet()+")",
             'background-position': "-"+this.offset_x()+"px -"+this.offset_y()+"px"}
 };
 
@@ -161,6 +161,15 @@ function Appl(width,height,grid_size){
         };
     },this);
 }
+
+Appl.prototype.save = function(){
+    // returns an object to be saved
+    return {};  
+};
+
+Appl.prototype.load = function(saved_map){
+    // will update state from saved_map
+};
 
 Appl.prototype._update_layer_names_ = function(){
 	this.layers(this._get_layer_names_());

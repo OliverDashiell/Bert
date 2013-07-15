@@ -20,19 +20,26 @@ html,body{
 button{
 	background-color: #eee;
 	border-radius: 4px;
-	border: 1px solid gray;    
+	border: 1px solid #ccc;    
     padding: 2px 6px 3px 6px;
     margin: 1px 1px 2px 1px;
     font-weight: bold;
 }
-#menu input[type=text]{
+button:hover{
+	background-color:#ff9500;
+	border: 1px solid #ddd; 
+    color: white;
+}
+input[type=text]{
 	border-radius: 3px;
-	border: 1px solid gray;
+	border: 1px solid #ccc;
     padding: 2px 3px 3px 3px;
     margin: 1px 1px 2px 1px;
 }
 .active{
-	background-color:#6CF;
+	background-color:#0c5da5;
+	border: 1px solid #ddd; 
+    color: white;
 }
 #menu{
 	position: absolute;
@@ -49,7 +56,7 @@ button{
     background: -ms-linear-gradient(top,  #45484d 18%,#000000 100%); /* IE10+ */
     background: linear-gradient(to bottom,  #45484d 18%,#000000 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
-	border-bottom: 1px solid blue;
+	border-bottom: 1px solid #0c5da5;
 	padding: 10px;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -65,7 +72,7 @@ button{
     overflow: auto;
 }
 #sprites{
-	border-top: 1px solid blue;
+	border-top: 1px solid #0c5da5;
 	background-color: white;
 	position: absolute;
 	left: 0px;
@@ -87,7 +94,7 @@ button{
 	z-index: 200;
     overflow: auto;
     background-color:white;
-	border-left: 1px solid blue;
+	border-left: 1px solid #0c5da5;
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
@@ -111,12 +118,12 @@ button{
 
 .sheet-item{
 	position:    absolute;
-	border: 1px solid blue;
+	border: 1px solid #0c5da5;
 	z-index: 300;
 }
 
 .selected_sprite{
-	border: 1px solid orange;
+	border: 1px solid #ff9500;
 }
 .selection-box {
 	position:    absolute;
@@ -138,6 +145,51 @@ button{
     font-family: 'Allan', cursive;
     font-size: 16px;
     line-height: 13px;
-    color: #0099CC;
+    color: #ff9500;
     margin-right: 1em;
+}
+
+/* dialog css */
+
+.sps-dialog-container, .mps-dialog-container{
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 9999;
+}
+.dialog, .mps-dialog{
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 4em;
+    border: 1px solid black;
+    background-color: white;
+    border-radius: 4px;
+    overflow: hidden;
+    -webkit-box-shadow:  4px 4px 5px 2px rgba(0, 0, 0, 0.2);
+    box-shadow:  4px 4px 5px 2px rgba(0, 0, 0, 0.2);
+}
+.hr{
+    background-color: #0c5da5; 
+    height: 1px;
+    margin: 1em 0 1em 0;
+}
+.dialog-title{
+    padding: 0.5em;
+    color: white;
+    background: #45484d; /* Old browsers */
+    background: -moz-linear-gradient(top,  #45484d 18%, #000000 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(18%,#45484d), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #45484d 18%,#000000 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #45484d 18%,#000000 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #45484d 18%,#000000 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #45484d 18%,#000000 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+}
+.dialog-content{
+    padding: 0.5em;
 }

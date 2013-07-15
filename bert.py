@@ -1,7 +1,7 @@
 from pkg_resources import resource_filename
 import tornado.ioloop
 import tornado.web
-from spritesheet_handler import SpriteSheetHandler
+from upload_handler import UploadHandler
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -12,7 +12,8 @@ class MainHandler(tornado.web.RequestHandler):
 def main():
     application = tornado.web.Application([
         (r"/", MainHandler),
-        (r"/spritesheets", SpriteSheetHandler, {'directory':resource_filename('bert',"www/static/images")})
+        (r"/maps", UploadHandler, {'directory':resource_filename('bert',"www/static/maps")}),
+        (r"/spritesheets", UploadHandler, {'directory':resource_filename('bert',"www/static/images/spritesheets")})
     ],
     static_path=resource_filename('bert',"www/static"),
     template_path=resource_filename('bert',"www"),

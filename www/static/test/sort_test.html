@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Scroll Test</title>
+	<title>Sort Test</title>
 	<meta name="generator" content="BBEdit 10.5" />
     <script type="text/javascript" src="../lib/jquery-2.0.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../lib/Font-Awesome/css/font-awesome.min.css" />
+    <script type="text/javascript" src="../lib/knockout-2.2.1.js"></script>
     <style type="text/css">
         html,body{
             width: 100%;
@@ -18,9 +20,6 @@
             margin-right: auto;
             margin-top: 5em;
             overflow: auto;
-        }
-        #launch-dialog{
-            text-align: center;
         }
         .dialog-container{
             display: none;
@@ -63,49 +62,89 @@
             width: 1800px;
             height: 1600px;
         }
-        .blue{
-            background: #1e5799; /* Old browsers */
-            background: -moz-radial-gradient(center, ellipse cover,  #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* FF3.6+ */
-            background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#1e5799), color-stop(50%,#2989d8), color-stop(51%,#207cca), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
-            background: -webkit-radial-gradient(center, ellipse cover,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-radial-gradient(center, ellipse cover,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%); /* Opera 12+ */
-            background: -ms-radial-gradient(center, ellipse cover,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%); /* IE10+ */
-            background: radial-gradient(ellipse at center,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%); /* W3C */
-            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */            
+        .sortable-list{
+            list-style-type: none;
+            padding: 0px;
+        }
+        .sortable-list li{
+            padding: 2px;
         }
     </style>
     <script type="text/javascript">
         $(function(){
+            var view_model={
+                layers: ko.observableArray(["background", "water", "buildings"]),
+                edit_layers: ko.observableArray()
+            };
+            
+            function move_item_up(item) {
+                var index = view_model.edit_layers.indexOf(item);
+                view_model.edit_layers.splice(index, 1);
+                view_model.edit_layers.splice(index-1, 0, item);
+                console.log("up", item, index);
+            };
+            
+            view_model.up = move_item_up;
+            
+            function move_item_down(item) {
+                var index = view_model.edit_layers.indexOf(item);
+                view_model.edit_layers.splice(index, 1);
+                view_model.edit_layers.splice(index+1, 0, item);
+                console.log("down", item, index);
+            };
+            
+            view_model.down = move_item_down;
+            
             $("#launch-dialog").click(function(){
+                view_model.edit_layers(view_model.layers.slice(0));
                 $(".dialog-container").show();
             });
             $(".close-dialog").click(function(e){
                 $(".dialog-container").hide();
                 e.preventDefault();
             });
+            $(".done-dialog").click(function(e){
+                $(".dialog-container").hide();
+                view_model.layers(view_model.edit_layers());
+                e.preventDefault();
+            });
+            
+            ko.applyBindings(view_model);
         });
     </script>
 </head>
 <body>
-    <div id="main">
-        <div id="content" class="blue"></div>
-    </div>
     <div id="launch-dialog">
+        <ul data-bind="foreach:layers">
+            <li data-bind="text:$data">
+            </li>
+        </ul>
         <button>dialog</button>
     </div>
     <div class="dialog-container">
         <div class="dialog">
             <div class="dialog-title">
-                Upload Spritesheet...
+                Sort Layers...
             </div>
-            <form class="dialog-content" method="post" action="/spritesheets" enctype="multipart/form-data">
-                <input type="file" name="file1" />
+            <div class="dialog-content">
+                <div>
+                    <ul class="sortable-list" data-bind="foreach:edit_layers">
+                        <li>
+                            <button data-bind="disable:$index()==0, click:$parent.up">
+                                <i class='icon-long-arrow-up'></i></button>
+                            <button data-bind="click:$parent.down, disable:$index()==$parent.layers().length-1">
+                                <i class='icon-long-arrow-down'></i></button>
+                            <span data-bind="text:$data">
+                            </span>
+                        </li>
+                    </ul>
+                </div>
                 <hr/>
                 <div style="text-align:right;">
                     <button class="close-dialog">Cancel</button>
-                    <input type="submit" value="Upload" />
+                    <button class="done-dialog">Done</button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </body>
