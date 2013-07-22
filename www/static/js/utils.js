@@ -1,4 +1,16 @@
 
+if (!Array.prototype.diff){
+    Array.prototype.diff = function(other){
+        var len = this.length;
+        var result = [];
+        for(var i=0; i<len; i++){
+            if(other.indexOf(this[i]) == -1){
+                result.push(this[i]);
+            }
+        }
+        return result;
+    };
+}
 
 function set_background_grid(selector, grid_width, colour, background_colour){
     // will set the background image of selector to the
@@ -37,4 +49,3 @@ function checkOverlap(dims1, dims2) {
         w2 = dims2[2], h2 = dims2[3];
     return !(y2 + h2 <= y1 || y1 + h1 <= y2 || x2 + w2 <= x1 || x1 + w1 <= x2);
 }
-

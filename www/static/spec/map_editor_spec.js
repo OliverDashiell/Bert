@@ -74,7 +74,7 @@ describe("Appl", function() {
   	expect(appl.sprite_list().length).toEqual(0);
   });
   
-  it("should delete sprite list item on a new layer", function() {
+  it("should delete sprite list item on new layer", function() {
   	appl.add_sprite_sheet("foo.png");
   	appl.sheet_drag_rect([0,0,grid_size,grid_size]);
   	appl.add_spite_sheet_item();
@@ -86,6 +86,38 @@ describe("Appl", function() {
   
   it("should not delete sprite list item on the background layer", function() {
   	appl.add_sprite_sheet("foo.png");
+  	appl.sheet_drag_rect([0,0,grid_size,grid_size]);
+  	appl.add_spite_sheet_item();
+  	appl.selected_layer("water");
+  	appl.do_action(5,5);
+  	appl.selected_layer("background");
+  	appl.remove_sprite_list_item(6,8);
+  	expect(appl.sprite_list().length).toEqual(1);
+  });
+    
+  it("should move layer", function() {
+    appl.add_sprite_sheet("foo.png");
+  	appl.sheet_drag_rect([0,0,grid_size,grid_size]);
+  	appl.add_spite_sheet_item();
+  	appl.selected_layer("water");
+  	appl.do_action(5,5);
+  	appl.selected_layer("background");
+  	appl.remove_sprite_list_item(6,8);
+    
+    appl.edit_layers().removeAll();
+    var layers = this._get_layer_names_();
+    for(var i=0; i<layers.length;i++){
+        this.edit_layers.push({
+            title: ko.observable(layers[i]),
+            origin: layers[i]
+        });
+    }
+    
+  	expect(appl.sprite_list().length).toEqual(1);
+  });
+    
+  it("should rename layer", function() {
+    appl.add_sprite_sheet("foo.png");
   	appl.sheet_drag_rect([0,0,grid_size,grid_size]);
   	appl.add_spite_sheet_item();
   	appl.selected_layer("water");

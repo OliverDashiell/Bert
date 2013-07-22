@@ -31,10 +31,6 @@ button:hover{
     color: white;
 }
 input[type=text]{
-	border-radius: 3px;
-	border: 1px solid #ccc;
-    padding: 2px 3px 3px 3px;
-    margin: 1px 1px 2px 1px;
 }
 .active{
 	background-color:#0c5da5;
@@ -149,9 +145,41 @@ input[type=text]{
     margin-right: 1em;
 }
 
+.layer-text{
+    -webkit-border-top-left-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+	border: 1px solid #ccc;
+    padding: 2px 3px 3px 3px;
+    margin: 1px 1px 2px 1px;
+    margin-right: 0px;
+    border-right-width: 0px;
+}
+.layer-dropdown{
+    height: 20px;
+    border-radius: 0px;
+    -webkit-border-top-right-radius: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+    -moz-border-radius-topright: 3px;
+    -moz-border-radius-bottomright: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin-left: 0px;
+}
+
+.menu-input{   
+	border-radius: 3px;
+	border: 1px solid #ccc;
+    padding: 2px 3px 3px 3px;
+    margin: 1px 1px 2px 1px;
+}
+
 /* dialog css */
 
-.sps-dialog-container, .mps-dialog-container{
+.sps-dialog-container, .mps-dialog-container, .lyr-dialog-container{
     display: none;
     position: absolute;
     top: 0px;
@@ -192,4 +220,71 @@ input[type=text]{
 }
 .dialog-content{
     padding: 0.5em;
+}
+.layer-drop{
+    border: 1px solid black;
+    background-color: white;
+    border-width: 1px 1px 1px 0px;
+    line-height: 17px;
+    margin: 0;
+    padding-left: 4px;
+    -webkit-border-top-right-radius: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+    -moz-border-radius-topright: 2px;
+    -moz-border-radius-bottomright: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.sortable-list{
+    list-style-type: none;
+    padding: 0px;
+}
+.sortable-list li{
+    padding: 2px;
+}
+.sortable-list button{
+    margin: 0;
+    font-size: 7px;
+}
+.sort-button{
+    padding: 0px 5px 1px 5px;
+    float: left;
+    clear: left;
+}
+.up-button{
+    border-radius: 0;
+    -webkit-border-top-left-radius: 2px;
+    -moz-border-radius-topleft: 2px;
+    border-top-left-radius: 2px;
+}
+.down-button{
+    border-top: 0px;
+    border-radius: 0;
+    -webkit-border-bottom-left-radius: 2px;
+    -moz-border-radius-bottomleft: 2px;
+    border-bottom-left-radius: 2px;
+}
+.sortable-list down-button:hover{
+    border-top: 0px;
+}
+.sortable-list input[type=text]{
+	border: 1px solid #ccc;
+    padding: 3px 3px 3px 3px;
+    margin: 0;
+    border-width: 1px 0px 1px 0px;
+    width: 80%;
+}
+.delete-layer-button{
+    position: absolute;
+    height: 21px;
+    border-radius: 0;
+    -webkit-border-top-right-radius: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+    -moz-border-radius-topright: 2px;
+    -moz-border-radius-bottomright: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    float: right;
+    clear: right;
 }

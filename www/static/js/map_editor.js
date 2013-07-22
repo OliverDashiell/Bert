@@ -145,7 +145,7 @@ function Appl(width,height,grid_size){
     },this);
 	
 	this.sprite_list = ko.observableArray();
-	this.sprite_list.subscribe($.proxy(this._update_layer_names_,this));
+	this.sprite_list.subscribe($.proxy(this._sprites_changed_,this));
 	
 	this.selected_sprite_item_index = ko.computed(function(){
 		if(this.selected_sheet() && this.selected_sprite_item()){
@@ -171,21 +171,62 @@ Appl.prototype.load = function(saved_map){
     // will update state from saved_map
 };
 
-Appl.prototype._update_layer_names_ = function(){
-	this.layers(this._get_layer_names_());
+Appl.prototype._sprites_changed_ = function(sprite_list_array){
+    /*
+        from the sprite list array
+        check each item's layer is in this.layers()
+        if not in this.layer then add it
+     */
+};
+
+Appl.prototype._update_layer_names_ = function(new_layers){
+    var sorted_layers = [];
+    
+    for(var i = 0; i<new_layers.length; i++){
+        sorted_layers.push(new_layers[i].title());
+    }
+    
+    if(sorted_layers){
+       this.layers(sorted_layers);
+    }
 };
 
 Appl.prototype._get_layer_names_ = function() {
-	var result = [this.Constants.default_layer];
+//	var result = [this.Constants.default_layer];
 	
-	for(var i = 0; i<this.sprite_list().length; i++) {
-		if(result.indexOf(this.sprite_list()[i].layer()) === -1) {
-			result.push(this.sprite_list()[i].layer());
-		}
-	}
+//	for(var i = 0; i<this.sprite_list().length; i++) {
+//		if(result.indexOf(this.sprite_list()[i].layer()) === -1) {
+//			result.push(this.sprite_list()[i].layer());
+//		}
+//	}
 	
-	result.sort();
-	return result;
+//	result.sort();
+//	return result;
+    
+    return this.layers();
+}
+
+Appl.prototype.update_sprite_layers = function(new_layer_names){
+    var layer_names = [];
+    
+    for(var j = 0; j<new_layer_names.length; j++){
+        layer_names.push(new_layer_names[j].title());
+        
+        if(new_layer_names[j].title() != new_layer_names[j].origin){
+            for(var i = 0; i<this.sprite_list().length; i++){
+                if(sprite_list()[i].layer() === new_layer_names[j].origin) {
+                    sprite_list()[i].layer(new_layer_names[j].title());
+                }
+            }
+        }
+    }
+    
+    this.sprite_list.sort(function(l,r){
+        var l_index = layer_names.indexOf(l.layer());
+        var r_index = layer_names.indexOf(r.layer());
+        
+        return l_index - r_index;
+    });
 }
 
 Appl.prototype.delete_layer = function(){

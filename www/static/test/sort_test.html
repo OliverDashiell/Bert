@@ -69,6 +69,53 @@
         .sortable-list li{
             padding: 2px;
         }
+        .sortable-list button{
+            margin: 0;
+            background-color: white;
+            font-size: 7px;
+        }
+        .sort-button{
+            padding: 0px 5px 1px 5px;
+            float: left;
+            clear: left;
+        }
+        .sortable-list button:enabled:hover{
+            background-color: gray;   
+        }
+        .up-button{
+            border: 1px solid black;
+            -webkit-border-top-left-radius: 2px;
+            -moz-border-radius-topleft: 2px;
+            border-top-left-radius: 2px;
+        }
+        .down-button{
+            border: 1px solid black;
+            border-top: 0px;
+            -webkit-border-bottom-left-radius: 2px;
+            -moz-border-radius-bottomleft: 2px;
+            border-bottom-left-radius: 2px;
+        }
+        .sortable-list input[type=text]{
+            margin: 0;
+            border: 1px solid black;
+            border-width: 1px 0px 1px 0px;
+            line-height: 17px;
+            width: 80%;
+            padding-left: 4px;
+        }
+        .delete-layer-button{
+            position: absolute;
+            height: 21px;
+            border: 1px solid black;
+            -webkit-border-top-right-radius: 2px;
+            -webkit-border-bottom-right-radius: 2px;
+            -moz-border-radius-topright: 2px;
+            -moz-border-radius-bottomright: 2px;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+            float: right;
+            clear: right;
+        }
     </style>
     <script type="text/javascript">
         $(function(){
@@ -81,22 +128,61 @@
                 var index = view_model.edit_layers.indexOf(item);
                 view_model.edit_layers.splice(index, 1);
                 view_model.edit_layers.splice(index-1, 0, item);
-                console.log("up", item, index);
+                //console.log("up", item, index);
             };
-            
             view_model.up = move_item_up;
             
             function move_item_down(item) {
                 var index = view_model.edit_layers.indexOf(item);
                 view_model.edit_layers.splice(index, 1);
                 view_model.edit_layers.splice(index+1, 0, item);
-                console.log("down", item, index);
+                //console.log("down", item, index);
             };
-            
             view_model.down = move_item_down;
             
+            function delete_item(item) {
+                var index = view_model.edit_layers.indexOf(item);
+                view_model.edit_layers.splice(index, 1);
+                console.log("delete", item, index);
+            }
+            view_model.delete_item = delete_item;
+            
+            function disable_item_up(item) {
+                var index = view_model.edit_layers.indexOf(item);
+                if(index() == 0){
+                    return true;
+                }
+                return false;
+            }
+            view_model.disableup = disable_item_up;
+            
+            function disable_item_down(item) {
+                var index = view_model.edit_layers.indexOf(item);
+                if(index == 0){
+                    return true;
+                }
+                else if(index == view_model.edit_layers().length-1){
+                    return true;
+                }
+                return false;
+            }
+            view_model.disabledown = disable_item_down;
+            
+            function disable_item_delete(item) {
+                if(view_model.edit_layers().length == 1){
+                    return true;
+                }
+                return false;
+            }
+            view_model.disabledelete = disable_item_delete;
+            
             $("#launch-dialog").click(function(){
-                view_model.edit_layers(view_model.layers.slice(0));
+                view_model.edit_layers.removeAll();
+                for(var i=0; i<view_model.layers().length;i++){
+                    view_model.edit_layers.push({
+                        title: ko.observable(view_model.layers()[i])
+                    });
+                }
                 $(".dialog-container").show();
             });
             $(".close-dialog").click(function(e){
@@ -105,7 +191,10 @@
             });
             $(".done-dialog").click(function(e){
                 $(".dialog-container").hide();
-                view_model.layers(view_model.edit_layers());
+                view_model.layers.removeAll();
+                for(var i=0; i<view_model.edit_layers().length;i++){
+                    view_model.layers.splice(i,1,view_model.edit_layers()[i].title());
+                }
                 e.preventDefault();
             });
             
@@ -124,25 +213,26 @@
     <div class="dialog-container">
         <div class="dialog">
             <div class="dialog-title">
-                Sort Layers...
+                Sort &amp; Edit Layers...
             </div>
             <div class="dialog-content">
                 <div>
                     <ul class="sortable-list" data-bind="foreach:edit_layers">
                         <li>
-                            <button data-bind="disable:$index()==0, click:$parent.up">
-                                <i class='icon-long-arrow-up'></i></button>
-                            <button data-bind="click:$parent.down, disable:$index()==$parent.layers().length-1">
-                                <i class='icon-long-arrow-down'></i></button>
-                            <span data-bind="text:$data">
-                            </span>
+                            <button class="up-button sort-button" data-bind="click:$parent.up, disable:$parent.edit_layers().indexOf()==0"> <!--$parent.disableup($data)">-->
+                                <i class='icon-caret-up'></i></button>
+                            <button class="down-button sort-button" data-bind="click:$parent.down"> <!--, disable:$parent.disabledown($data)">-->
+                                <i class='icon-caret-down'></i></button>
+                            <input type="text" data-bind="value:title" />
+                            <button class="delete-layer-button" data-bind="click:$parent.delete_item"> <!--, disable:$parent.disabledelete($data)">-->
+                                <i class='icon-minus'></i></button>
                         </li>
                     </ul>
                 </div>
                 <hr/>
                 <div style="text-align:right;">
                     <button class="close-dialog">Cancel</button>
-                    <button class="done-dialog">Done</button>
+                    <button class="done-dialog">Apply</button>
                 </div>
             </div>
         </div>

@@ -19,6 +19,7 @@ $(function(){
 	var appl = window.appl = new Appl();
 	appl.sheets_visible = ko.observable(false);
 	appl.sprites_visible = ko.observable(false);
+    appl.edit_layers = ko.observableArray();
     
     appl.selected_sheet.subscribe(function(sheet){
         if(sheet && sheet.sheet_width() === 0){
@@ -127,6 +128,18 @@ $(function(){
     	return l.layer() === r.layer() ? 0 : l.layer() > r.layer() ? 1 : -1;
     };
     
+    appl.__layer_dialog__ = function(){
+        this.edit_layers.removeAll();
+        var layers = this._get_layer_names_();
+        for(var i=0; i<layers.length;i++){
+            this.edit_layers.push({
+                title: ko.observable(layers[i]),
+                origin: layers[i]
+            });
+        }
+        $(".lyr-dialog-container").show();
+    };
+    
     appl.__upload_dialog__ = function(){
         $(".sps-dialog-container").show();
     };
@@ -147,10 +160,14 @@ $(function(){
         $(".sps-dialog-container").hide();
         evt.preventDefault();
     });
-    $('.dialog-content',".sps-dialog-container").ajaxForm(function(data) {
+    $('.dialog-content',".sps-dialog-container").ajaxForm(function(response) {
         $(".sps-dialog-container").hide();
-        alert("ok, add missing new sprite sheets!"); 
         // add missing new sprite sheets
+        var data = $.parseJSON(response);
+        var new_sheets = data.diff(appl._get_sheet_names_());
+        for(var i=0; i<new_sheets.length; i++){
+            appl.add_sprite_sheet(new_sheets[i]);
+        }
     });
     
     $(".dialog-close",".mps-dialog-container").click(function(evt){
@@ -162,6 +179,17 @@ $(function(){
         formData.push({name:'filedata',value:ko.mapping.toJSON(appl),type:'json',required:false});
         console.log(formData);
         return false;
+    }});
+    
+    $(".dialog-close",".lyr-dialog-container").click(function(evt){
+        $(".lyr-dialog-container").hide();
+        evt.preventDefault();
+        console.log("form closed");
+    });
+    $('.dialog-content',".lyr-dialog-container").ajaxForm({beforeSubmit:function(formData, jqForm, options){
+        $(".lyr-dialog-container").hide();
+        return false;
+        console.log("form submitted");
     }});
     
     $.getJSON("/spritesheets", function(data, textStatus, jqXHR){
@@ -194,7 +222,7 @@ $(function(){
         </button>
         <!-- ko if:selected_sheet -->
         <button class="sheet-tool pull-right" data-bind="visible:sheets_visible" 
-                data-dropdown="#dropdown-2" data-horizontal-offset="5">
+                data-dropdown="#dropdown-sheets" data-horizontal-offset="6">
             <span data-bind="text:selected_sheet().sheet"></span>
             <i class="icon-caret-down"></i>
         </button>
@@ -205,13 +233,17 @@ $(function(){
             <i class="icon-picture"></i>
             Sprites
         </button>
-        <div class="pull-right" style="margin-top: 5px; margin-right: 5px;">Selection:<span data-bind="text:selected_sprite_item_index()"></span></div>
-		<input type="text" data-bind="value:selected_layer" data-dropdown="#dropdown-1" />
-        <i class="icon-caret-down" data-dropdown="#dropdown-1a" data-vertical-offset="3" ></i>
+        <div class="pull-right" style="margin-top: 5px; margin-right: 5px;" data-bind="visible:sheets_visible">Selection:<span data-bind="text:selected_sprite_item_index()"></span></div>
+        
+        <input class="layer-text" type="text" 
+               data-bind="value:selected_layer"/><button class="layer-dropdown"
+                      data-dropdown="#dropdown-layers" data-horizontal-offset="6">
+            <i class="icon-caret-down"></i></button>
+        
         <span style="margin-left: 6px;">w:</span>
-        <input type="text" data-bind="value:width" style="width:60px;"/>
+        <input class="menu-input" type="text" data-bind="value:width" style="width:60px;"/>
         <span>h:</span>
-		<input type="text" data-bind="value:height" style="width:60px;" />
+		<input class="menu-input" type="text" data-bind="value:height" style="width:60px;"/>
 		<button class="open-tool" data-bind="click:$.proxy(__open_map__,$root)">
             <i class="icon-folder-open"></i>
             Open
@@ -258,17 +290,16 @@ $(function(){
 		<!-- /ko -->
 	</div>
     
-    <div id="dropdown-1" class="dropdown dropdown-tip">
-        <ul class="dropdown-menu" data-bind="foreach:layers" >
+    <div id="dropdown-layers" class="dropdown dropdown-tip dropdown-anchor-right">
+        <ul class="dropdown-menu">
+            <!-- ko foreach:layers -->
             <li><a href="#" data-bind="text:$data,click:$parent.selected_layer"></a></li>
+            <!-- /ko -->
+            <li class="dropdown-divider"></li>
+            <li><a href="#" data-bind="click:$.proxy(__layer_dialog__,$root)">Edit Layers</a></li>
         </ul>
     </div>
-    <div id="dropdown-1a" class="dropdown dropdown-tip dropdown-anchor-right">
-        <ul class="dropdown-menu" data-bind="foreach:layers" >
-            <li><a href="#" data-bind="text:$data,click:$parent.selected_layer"></a></li>
-        </ul>
-    </div>
-    <div id="dropdown-2" class="dropdown dropdown-tip">
+    <div id="dropdown-sheets" class="dropdown dropdown-tip dropdown-anchor-right">
         <ul class="dropdown-menu" >
             <!-- ko foreach:sprite_sheets -->
             <li><a href="#" data-bind="text:sheet,click:$parent.selected_sheet"></a></li>
@@ -309,6 +340,33 @@ $(function(){
                 <div style="text-align:right;">
                     <button class="dialog-close">Cancel</button>
                     <button>Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="lyr-dialog-container">
+        <div class="dialog">
+            <div class="dialog-title">
+                Sort &amp; Edit Layers...
+            </div>
+            <form class="dialog-content">
+                <div>
+                    <ul class="sortable-list" data-bind="foreach:edit_layers">
+                        <li>
+                            <button class="up-button sort-button" data-bind="click:$parent.up, disable:$parent.edit_layers().indexOf()==0"> <!--$parent.disableup($data)">-->
+                                <i class='icon-caret-up'></i></button>
+                            <button class="down-button sort-button" data-bind="click:$parent.down"> <!--, disable:$parent.disabledown($data)">-->
+                                <i class='icon-caret-down'></i></button>
+                            <input type="text" data-bind="value:title" />
+                            <button class="delete-layer-button" data-bind="click:$parent.delete_item"> <!--, disable:$parent.disabledelete($data)">-->
+                                <i class='icon-minus'></i></button>
+                        </li>
+                    </ul>
+                </div>
+                <hr/>
+                <div style="text-align:right;">
+                    <button class="dialog-close">Cancel</button>
+                    <button>Apply</button>
                 </div>
             </form>
         </div>
