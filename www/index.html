@@ -1,43 +1,24 @@
+{% import os, os.path %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Bert</title>
+	<title>Index</title>
     <link rel="shortcut icon" href="{{ static_url('images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ static_url('css/html5reset-1.6.1.css') }}" />
-    <link rel="stylesheet" href="{{ static_url('css/site.css') }}" />
-    <script type="text/javascript" src="{{ static_url('lib/jquery-2.0.2.min.js') }}"></script>
-    <script type="text/javascript" src="{{ static_url('js/fullscreen.js') }}"></script>
-    <script type="text/javascript" src="{{ static_url('js/sprite.js') }}"></script>
-    <script type="text/javascript" src="{{ static_url('js/zombie.js') }}"></script>
-    <script type="text/javascript" src="{{ static_url('js/bert.js') }}"></script>
-    <script type="text/javascript" src="{{ static_url('js/site.js') }}"></script>
 </head>
 <body>
-	<div class="scene">
-	<div id="bert" class="sprite"></div>
-	<div id="zombie" class="zombie"></div>
-	</div>
-	<hr/>
-	<button id="run">run</button>
-	<button id="attack">attack</button>
-	<button class="weapon" data-value="1">pistol</button>
-	<button class="weapon" data-value="2">shotgun</button>
-	<button class="weapon" data-value="3">m-gun</button>
-	<button class="weapon" data-value="4">grenade</button>
-	<button class="weapon" data-value="5">mine</button>
-	<button id="fullscreen">fullscreen</button>
-	<button id="audio">audio</button>
-	<span id="status"></span>
-	<hr/>
-    <img src="{{ static_url('images/spritesheets/brtsheet.png') }}" width="50%" height="50%" alt="brtsheet" />
-    <audio id="zombie_audio" preload>
-        <source src="{{ static_url('audio/Zombie.mp3') }}" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <audio id="zombie_death_audio" preload>
-        <source src="{{ static_url('audio/ZombieDeath.mp3') }}" type="audio/mpeg">
-    </audio>
+    <h1>Cool launch page!</h1>
+    <ul>
+        <li><a href="/bert">Bert</a></li>
+        {% for root,dirs,files in os.walk(application.settings['static_path']) %}
+        {% for file in files %}
+        {% set p = os.path.relpath(os.path.join(root,file), application.settings['static_path']) %}
+        {% if file.endswith(".html") and not p.startswith("lib/") %}
+        <li><a href="{{ "/static/{}".format(p) }}">{{ escape(p) }}</a></li>
+        {% end %}
+        {% end %}
+        {% end %}
+    </ul>
 </body>
 </html>

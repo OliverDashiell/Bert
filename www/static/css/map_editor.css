@@ -16,6 +16,12 @@ html,body{
     width: 100%;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+         -o-user-select: none;
+            user-select: none;
 }
 button{
 	background-color: #eee;
@@ -89,7 +95,7 @@ input[type=text]{
 	width: 40%;
 	z-index: 200;
     overflow: auto;
-    background-color:white;
+    background-color: white;
 	border-left: 1px solid #0c5da5;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -97,18 +103,18 @@ input[type=text]{
 }
 
 .hidden{
-	display:none;
+	display: none;
 }
 .shown{
 	display: block;
 }
 .pull-right{
-	float:right;
+	float: right;
 }
 
 
 .map-item{
-	position:    absolute;
+	position: absolute;
 	z-index: 300;
 }
 
@@ -129,6 +135,7 @@ input[type=text]{
 }
 
 .spitesheetpanel{
+    cursor: crosshair;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -265,8 +272,8 @@ input[type=text]{
     -moz-border-radius-bottomleft: 2px;
     border-bottom-left-radius: 2px;
 }
-.sortable-list down-button:hover{
-    border-top: 0px;
+.sortable-list button:disabled:hover{
+    background-color: gray;
 }
 .sortable-list input[type=text]{
 	border: 1px solid #ccc;
