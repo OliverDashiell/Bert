@@ -1,18 +1,10 @@
-from pkg_resources import resource_filename
+from pkg_resources import resource_filename #@UnresolvedImport
 import tornado.ioloop
 import tornado.web
 from upload_handler import UploadHandler
+from bert.main_handler import MainHandler
 
-
-class MainHandler(tornado.web.RequestHandler):
     
-    def initialize(self, page="index.html"):
-        self.page = page
-        
-    def get(self):
-        self.render(self.page, application=self.application)
-
-        
 def main():
     application = tornado.web.Application([
         (r"/", MainHandler),
