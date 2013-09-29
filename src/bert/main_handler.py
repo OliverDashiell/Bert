@@ -7,6 +7,7 @@ import tornado.web
 
 
 class MainHandler(tornado.web.RequestHandler):
+    ''' returns the index page by default or the specified page '''
     
     def initialize(self, page="index.html"):
         self.page = page
