@@ -81,6 +81,10 @@ function SpriteListItem(layer, sheet, map_x, map_y, offset_x, offset_y, width, h
 		return [this.map_x(),
 				this.map_y()];
 	},this);
+	this.map_index = ko.computed(function(){
+		return [this.map_x()/16,
+				this.map_y()/16];
+	},this);
 	this.map_coords = ko.computed(function(){
 		return [this.map_x(),
 				this.map_y(),
